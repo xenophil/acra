@@ -120,7 +120,7 @@ public class ACRA {
                     "ACRA#init called but no ReportsCrashes annotation on Application " + app.getPackageName());
             return;
         }
-        init(app, reportsCrashes);
+        init(app, new ACRAConfiguration(reportsCrashes));
     }
 
     /**
@@ -137,13 +137,20 @@ public class ACRA {
      * @throws IllegalStateException
      *             if it is called more than once.
      */
-    public static void init(Application app, ReportsCrashes reportsCrashes){
+    public static void init(Application app, ACRAConfiguration config){
 
         if (mApplication != null) {
             log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
             return;
         }
         mApplication = app;
+        
+        if (config == null) {
+            log.e(LOG_TAG,
+                    "ACRA#init called but no ACRAConfiguration provided");
+            return;
+        }
+        setConfig(config);
 
         final SharedPreferences prefs = getACRASharedPreferences();
 
