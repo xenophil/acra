@@ -114,19 +114,36 @@ public class ACRA {
      *             if it is called more than once.
      */
     public static void init(Application app) {
+        ReportsCrashes reportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
+        if (reportsCrashes == null) {
+            log.e(LOG_TAG,
+                    "ACRA#init called but no ReportsCrashes annotation on Application " + app.getPackageName());
+            return;
+        }
+        init(app, reportsCrashes);
+    }
+
+    /**
+     * <p>
+     * Initialize ACRA for a given Application. The call to this method should
+     * be placed as soon as possible in the {@link Application#onCreate()}
+     * method.
+     * </p>
+     *
+     * @param app
+     *            Your Application class.
+     * @param reportsCrashes
+     *            ACRAConfiguration to manually set up ACRA configuration.
+     * @throws IllegalStateException
+     *             if it is called more than once.
+     */
+    public static void init(Application app, ReportsCrashes reportsCrashes){
 
         if (mApplication != null) {
             log.w(LOG_TAG, "ACRA#init called more than once. Won't do anything more.");
             return;
         }
-
         mApplication = app;
-        mReportsCrashes = mApplication.getClass().getAnnotation(ReportsCrashes.class);
-        if (mReportsCrashes == null) {
-            log.e(LOG_TAG,
-                    "ACRA#init called but no ReportsCrashes annotation on Application " + mApplication.getPackageName());
-            return;
-        }
 
         final SharedPreferences prefs = getACRASharedPreferences();
 
